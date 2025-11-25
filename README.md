@@ -27,4 +27,4 @@ Dev: Radin6262 Manager: IamAbolfazlGameMaker
 3. Modification – Modifications can be done in private
 4. Distribution – You may not share, sell, rent, or transfer this project outside the studio. doing so will cause harsh legal action & By Us and InterNational Copyright laws you cannot legally redisturbute any code or similiar code to this app in other platforms or github and doing so will result in dmca strikes and legal action.
 
-*Disclaimer: This project is provided "as is" without warranties of any kind.So any unethical code written with this ide will not be golden wing studios responsibilty*
+*Disclaimer: This project is provided "as is" without warranties of any kind, So any unethical code written with this ide will not be golden wing studios responsibilty*
