@@ -16,7 +16,6 @@ from PySide6.QtCore import Qt, QTimer, Signal, QCoreApplication, QFileInfo, QDir
 # --- Core Logic Imports (Ensure these files exist) ---
 
 from core.settings import load_theme, load_settings, save_settings
-from core.plugins import download_plugin_list, install_plugin
 from core.editor import Editor # Note: If Editor is a QTabWidget containing a CodeEditorCore, you need to update it.
 from core.file_manager import FileManager 
 from core.terminal import TerminalWidget 
