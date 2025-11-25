@@ -1,0 +1,135 @@
+/* * LIGHT THEME QT STYLESHEET
+ * Primary Colors: White/Off-White backgrounds, Dark Gray text.
+ * Accent Color: Subtle Blue/Purple for focus.
+ */
+
+/* General background and text */
+QWidget {
+    /* Main application background: Crisp white */
+    background-color: #ffffff;
+    /* Main text color: Dark, readable gray */
+    color: #333333;
+    font-family: "Cascadia Code", "Fira Code", "Consolas", "Segoe UI", Tahoma, sans-serif;
+    font-size: 12pt;
+}
+
+/* Buttons */
+QPushButton {
+    /* Standard button background: Very light gray/off-white */
+    background-color: #e8e8e8;
+    /* Button text color: Dark gray */
+    color: #333333;
+    /* Border: Subtle light gray */
+    border: 1px solid #cccccc;
+    border-radius: 6px;
+    padding: 6px 14px;
+    transition: all 0.2s ease-in-out;
+}
+
+QPushButton:hover {
+    /* Hover effect: Slightly darker background for feedback */
+    background-color: #dcdcdc;
+    transform: scale(1.03);
+    border: 1px solid #bbbbbb;
+}
+
+QPushButton:pressed {
+    /* Pressed effect: Darker background */
+    background-color: #cacaca;
+    transform: scale(0.97);
+}
+
+/* Line edits (text inputs) and Text Edits */
+QLineEdit, QTextEdit {
+    /* Input background: White with a subtle blue tint */
+    background-color: #fcfcff;
+    /* Border: Light gray */
+    border: 1px solid #cccccc;
+    border-radius: 5px;
+    /* Input text color: Near black */
+    color: #000000;
+    padding: 4px 8px;
+}
+
+/* Combo boxes */
+QComboBox {
+    /* Combo box background */
+    background-color: #f0f0f0;
+    /* Border: Light gray */
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    padding: 4px 8px;
+    /* Combo box text color: Dark gray */
+    color: #333333;
+}
+
+/* Toolbars */
+QToolBar {
+    /* Toolbar background: Off-white */
+    background-color: #f5f5f5;
+    /* Separator line: Light gray */
+    border-bottom: 1px solid #dddddd;
+    padding: 4px;
+}
+
+/* Scrollbars */
+QScrollBar:vertical {
+    /* Scrollbar track: White/Very light gray */
+    background: #ffffff;
+    width: 12px;
+    margin: 20px 0 20px 0;
+}
+
+QScrollBar::handle:vertical {
+    /* Scrollbar handle: Medium gray */
+    background: #c0c0c0;
+    min-height: 20px;
+    border-radius: 6px;
+}
+
+QScrollBar::handle:vertical:hover {
+    /* Handle hover: Slightly darker gray */
+    background: #a0a0a0;
+}
+
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    background: none;
+}
+
+/* Splitters */
+QSplitter {
+    /* Splitter background: Off-white */
+    background-color: #f5f5f5;
+}
+
+QSplitter::handle {
+    /* Splitter handle: Subtle light gray */
+    background-color: #dddddd;
+}
+
+/* Terminal widget (make sure QTextEdit objectName is set to 'terminal') */
+QTextEdit#terminal {
+    /* Terminal background: Very light, slightly greenish tint for that retro feel */
+    background-color: #f0fff0;
+    /* Terminal text color: Dark green */
+    color: #006600;
+    font-family: "Cascadia Code", "Consolas", monospace;
+    font-size: 11pt;
+    border: none;
+}
+
+/* Focused widget highlight */
+QLineEdit:focus, QTextEdit:focus, QComboBox:focus {
+    /* Focus border: A nice, soft blue accent */
+    border: 1px solid #6688ff;
+    /* Focus background: Very subtle blue highlight */
+    background-color: #f0f4ff;
+}
+
+/* Selection color */
+QWidget:selected {
+    /* Selection background: Soft blue */
+    background-color: #b0c4de;
+    /* Selection text color: Dark for readability */
+    color: #000000;
+}
