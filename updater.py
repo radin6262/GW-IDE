@@ -10,7 +10,7 @@ import subprocess
 # --- CONFIGURATION ---
 # The current version of your application installed locally.
 # This should match the version in your current (local) package.json or similar file.
-CURRENT_VERSION = "1.0.1"
+CURRENT_VERSION = "1.0.1.5"
 
 # GitHub Repository Details
 # GITHUB_OWNER = "YourGitHubUsername"      # e.g., "google"

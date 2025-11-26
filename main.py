@@ -72,7 +72,7 @@ class SplashScreen(QWidget):
         layout.setContentsMargins(30, 30, 30, 30)
 
         # Title Label
-        title_label = QLabel("GW IDE v1.0.1 BETA")
+        title_label = QLabel("GW IDE v1.0.1.5 BETA")
         title_label.setObjectName("title_label")
         title_label.setAlignment(Qt.AlignCenter)
         layout.addWidget(title_label)
