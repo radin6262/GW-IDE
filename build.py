@@ -24,7 +24,7 @@ for src, dest in ADDITIONAL_DATA:
 PyInstaller.__main__.run([
     MAIN_SCRIPT,
     "--onefile",
-    "--noconsole",                     # Remove this if you DO want console
+    "--windowed",                     # Remove this if you DO want console
     f"--icon={ICON_FILE}",
 
     # 🔥 FIX: Include the Python standard library
