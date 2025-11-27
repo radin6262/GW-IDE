@@ -131,7 +131,14 @@ def download_and_extract_update(remote_version):
         if os.path.exists(UPDATE_TEMP_DIR):
              shutil.rmtree(UPDATE_TEMP_DIR)
         return False
-
+def launch_main_app():
+    try:
+        print("\n-> Launching GW IDE...")
+        python_exe = sys.executable
+        subprocess.Popen([python_exe, "app.py"])
+        print("Main application started successfully.")
+    except Exception as e:
+        print(f"Failed to launch main application: {e}")
 
 def main():
     """Main function to run the update check."""
@@ -163,6 +170,7 @@ def main():
         print("Local version is up-to-date. No update needed.")
 
     print("\n--- Auto-Updater Finished ---")
+    launch_main_app()
     
 
 if __name__ == "__main__":
