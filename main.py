@@ -50,5 +50,5 @@ class SplashScreen(QWidget):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    splash = SplashScreen(main_app_script="updater.py", html_file="splash.html", duration_ms=10000)
+    splash = SplashScreen(main_app_script="app.py", html_file="splash.html", duration_ms=10000)
     sys.exit(app.exec())

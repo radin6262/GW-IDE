@@ -21,7 +21,7 @@ from PySide6.QtCore import (
 )
 
 # --- CONFIGURATION (Moved from original updater script) ---
-CURRENT_VERSION = "1.0.2"
+CURRENT_VERSION = "1.0.2.1"
 PACKAGE_JSON_URL = "https://raw.githubusercontent.com/IamAbolfazlGameMaker/GW-IDE/refs/heads/main/packages.json"
 SOURCE_CODE_ZIP_URL = "https://github.com/IamAbolfazlGameMaker/GW-IDE/archive/refs/heads/main.zip"
 UPDATE_TEMP_DIR = "temp_update_download"
@@ -137,21 +137,23 @@ class UpdateWorker(QRunnable):
                     # Calculate and report progress
                     if total_size > 0:
                         percent = int((bytes_downloaded / total_size) * 100)
+                        # Modified progress format to include percentage clearly
                         self.signals.progress.emit(f"Downloading: {bytes_downloaded / (1024*1024):.1f} MB of {total_size / (1024*1024):.1f} MB ({percent}%)")
                     else:
-                        self.signals.progress.emit(f"Downloading: {bytes_downloaded / (1024*1024):.1f} MB (Progress unknown)")
+                        self.signals.progress.emit(f"Downloading: {bytes_downloaded / (1024*1024):.1f} MB (Progress unknown, 0%)") # Default 0%
+                        
 
             # Move buffer cursor to the start for ZipFile reading
             zip_buffer.seek(0)
             
             # 3. Create and clean temporary directory
-            self.signals.progress.emit("Preparing file system...")
+            self.signals.progress.emit("Preparing file system... (100%)") # Final download step
             if os.path.exists(UPDATE_TEMP_DIR):
                 shutil.rmtree(UPDATE_TEMP_DIR) 
             os.makedirs(UPDATE_TEMP_DIR, exist_ok=True)
 
             # 4. Extract the zip file contents using the in-memory buffer
-            self.signals.progress.emit("Extracting new files...")
+            self.signals.progress.emit("Extracting new files... (100%)")
             with zipfile.ZipFile(zip_buffer, 'r') as zf:
                 root_dir = zf.namelist()[0].split('/')[0] + '/'
                 for member in zf.namelist():
@@ -166,7 +168,7 @@ class UpdateWorker(QRunnable):
                                 outfile.write(zf.read(member))
             
             # 5. Move extracted files into the target directory (crucial step for overwriting)
-            self.signals.progress.emit(f"Applying update to {UPDATE_TARGET_DIR} (This will overwrite existing files)...")
+            self.signals.progress.emit(f"Applying update to {UPDATE_TARGET_DIR} (This will overwrite existing files)... (100%)")
             
             for item in os.listdir(UPDATE_TEMP_DIR):
                 s = os.path.join(UPDATE_TEMP_DIR, item)
@@ -178,17 +180,19 @@ class UpdateWorker(QRunnable):
                         if not d.endswith('/Lib/site-packages'): # Basic safeguard
                             shutil.rmtree(d) 
                             shutil.copytree(s, d)
+                    else:
+                        shutil.copytree(s, d)
                 else:
                     shutil.copy2(s, d) 
             
-            self.signals.progress.emit("Update applied successfully! Cleaning up temporary files.")
+            self.signals.progress.emit("Update applied successfully! Cleaning up temporary files. (100%)")
             shutil.rmtree(UPDATE_TEMP_DIR)
             
             # Request app restart
             self.signals.result.emit(True, "Update complete! Please restart GW IDE to finalize the changes.")
 
         except Exception as e:
-            self.signals.progress.emit("Update failed.")
+            self.signals.progress.emit("Update failed. (0%)")
             if os.path.exists(UPDATE_TEMP_DIR):
                 shutil.rmtree(UPDATE_TEMP_DIR)
             self.signals.result.emit(False, f"Update failed during file operations: {e}")
@@ -215,6 +219,14 @@ class UpdateCheckerDialog(QDialog):
         self.status_label.setWordWrap(True)
         layout.addWidget(self.status_label)
         
+        # --- ADDED QPROGRESSBAR HERE ---
+        self.progress_bar = QProgressBar()
+        self.progress_bar.setRange(0, 100)
+        self.progress_bar.setValue(0)
+        self.progress_bar.setTextVisible(True)
+        layout.addWidget(self.progress_bar)
+        # -------------------------------
+        
         self.progress_label = QLabel("Initializing update check...")
         self.progress_label.setStyleSheet("color: #777;")
         layout.addWidget(self.progress_label)
@@ -228,19 +240,47 @@ class UpdateCheckerDialog(QDialog):
 
     def start_check(self):
         self.progress_label.setText("Starting remote version check...")
+        self.progress_bar.setValue(0)
         self.update_button.setEnabled(False)
         
         # 1. Start the check worker
         worker = UpdateWorker(action="check")
         worker.signals.result.connect(self.check_finished)
         worker.signals.version_checked.connect(self.version_info_received)
-        worker.signals.progress.connect(self.progress_label.setText)
+        worker.signals.progress.connect(self.update_progress_ui) # Connect to new handler
         self.threadpool.start(worker)
 
     def version_info_received(self, remote_version):
         self.remote_version = remote_version
         self.status_label.setText(f"Local Version: {CURRENT_VERSION}\nRemote Version: {remote_version}")
 
+    @Slot(str)
+    def update_progress_ui(self, text):
+        """Updates the progress label and extracts percentage for the progress bar."""
+        self.progress_label.setText(text)
+        
+        # Simple regex-like extraction for percentage in parentheses
+        try:
+            # Look for the pattern "(X%)"
+            start_index = text.rfind('(')
+            end_index = text.rfind('%)')
+            
+            if start_index != -1 and end_index != -1 and end_index > start_index:
+                percent_str = text[start_index + 1 : end_index]
+                percent = int(percent_str)
+                self.progress_bar.setValue(percent)
+            else:
+                # If no clear percentage is found, default to indeterminate mode 
+                # or a fixed value during non-download phases
+                if "Update applied" in text or "Extracting" in text:
+                     self.progress_bar.setValue(100)
+                else:
+                    self.progress_bar.setValue(0)
+                    
+        except ValueError:
+            # Catch if percentage string is not an integer (e.g., "unknown")
+            self.progress_bar.setValue(0)
+            
     @Slot(bool, str)
     def check_finished(self, success, message):
         self.progress_label.setText(message)
@@ -261,14 +301,17 @@ class UpdateCheckerDialog(QDialog):
         if "Update available" in message:
             self.update_button.setEnabled(True)
             self.update_button.setText(f"Update to v{self.remote_version}")
+            self.progress_bar.setValue(0) # Reset bar for the upcoming download
         elif "up-to-date" in message:
             self.update_button.setEnabled(False)
             self.update_button.setText("Up-to-Date")
+            self.progress_bar.setValue(100)
         else: # General Failure/Error
             self.update_button.setEnabled(False)
             self.update_button.setText("Check Failed")
+            self.progress_bar.setValue(0)
             QMessageBox.warning(self, "Update Check Failed", 
-                    "The update check failed due to an unknown error. Please check the logs.")
+                        "The update check failed due to an unknown error. Please check the logs.")
 
 
     def start_update(self):
@@ -282,18 +325,21 @@ class UpdateCheckerDialog(QDialog):
 
         if reply == QMessageBox.Yes:
             self.progress_label.setText("Starting download and install...")
+            self.progress_bar.setValue(0)
             self.update_button.setEnabled(False)
             
             # 2. Start the update worker
             update_worker = UpdateWorker(action="update")
             update_worker.remote_version = self.remote_version
             update_worker.signals.result.connect(self.update_finished)
-            update_worker.signals.progress.connect(self.progress_label.setText)
+            update_worker.signals.progress.connect(self.update_progress_ui) # Connect to new handler
             self.threadpool.start(update_worker)
         
     @Slot(bool, str)
     def update_finished(self, success, message):
         self.progress_label.setText(message)
+        self.progress_bar.setValue(100 if success else 0)
+        
         if success:
             self.update_button.setText("Restart Required")
             QMessageBox.information(self, "Update Success", message)
@@ -525,11 +571,20 @@ class GW(QMainWindow):
 
         self.setMenuBar(menu_bar)
         
-    # MODIFIED: Show Update Checker Dialog (now simple entry point)
+    # MODIFIED: Show Update Checker Dialog (stops and restarts autosave timer)
     def show_update_checker(self):
         """Shows the Update Checker dialog, which handles network checks internally."""
+        
+        # Stop autosave to prevent disk activity during update/file extraction
+        self.autosave_timer.stop() 
+        self.status_bar.showMessage("Autosave temporarily paused for update check.", 1000)
+
         dialog = UpdateCheckerDialog(self)
         dialog.exec()
+        
+        # Restart autosave after the dialog is closed
+        self.autosave_timer.start(30000)
+        self.status_bar.showMessage("Autosave restarted.", 1000)
 
 
     # 🎨 Toolbar Setup 
@@ -692,8 +747,11 @@ class GW(QMainWindow):
 
     def autosave(self):
         if self.autosave_enabled:
-            if self.editor.save_current_file():
-                self.status_bar.showMessage("Autosave triggered.", 1000) 
+            # Check if the autosave timer is actually running before trying to save
+            if self.autosave_timer.isActive():
+                if self.editor.save_current_file():
+                    self.status_bar.showMessage("Autosave triggered.", 1000) 
+            # If the timer is not active (i.e., paused for update), do nothing.
 
     def apply_theme(self, theme_name):
         stylesheet = load_theme(theme_name)
