@@ -9,9 +9,6 @@ MAIN_SCRIPT = "launch.py"        # Or "app.py"
 ICON_FILE = "icon.ico"         # Put your .ico in project folder
 
 ADDITIONAL_DATA = [
-    ("core", "core"),
-    ("user_data", "user_data"),
-    ("packages.json", "."),
 ]
 
 # Build the --add-data arguments
