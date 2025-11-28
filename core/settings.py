@@ -1,6 +1,20 @@
 import json
 import os
-
+logger = "0"
+try:
+    from addons.debug import *
+    print("Debug module loaded!")
+    logger = "1"
+except ModuleNotFoundError:
+    print("Debug module NOT found. Defaulting to normal printing")
+# ------------------------------------------------------------------
+# 🎨 SYNTAX HIGHLIGHTING: COLOR SCHEME & FORMATS
+# ------------------------------------------------------------------
+def Debug(val):
+    if logger == "1":
+        log(val)
+    else:
+        print(val)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # user_data folder inside the script directory
@@ -10,9 +24,9 @@ USER_DATA_DIR = os.path.join(BASE_DIR, "user_data")
 SETTINGS_PATH = os.path.join(USER_DATA_DIR, "settings.json")
 THEMES_DIR = os.path.join(USER_DATA_DIR, "themes")
 
-print("BASE_DIR=", BASE_DIR)
-print("USER_DATA_DIR=", USER_DATA_DIR)
-print("THEMES_DIR=", THEMES_DIR)
+Debug(f"BASE_DIR= {BASE_DIR}")
+Debug(f"USER_DATA_DIR= {USER_DATA_DIR}")
+Debug(f"THEMES_DIR= {THEMES_DIR}")
 
 default_settings = {
     "autosave": True,

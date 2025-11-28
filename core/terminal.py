@@ -4,7 +4,6 @@ from PySide6.QtGui import QTextCursor
 import getpass
 import platform
 import os # Import os for path handling
-
 class TerminalWidget(QTextEdit):
     def __init__(self, parent=None):
         super().__init__(parent)

@@ -1,6 +1,20 @@
 from PySide6.QtWidgets import QTreeView, QFileSystemModel
 from PySide6.QtCore import Signal, QDir
-
+logger = "0"
+try:
+    from addons.debug import *
+    print("Debug module loaded!")
+    logger = "1"
+except ModuleNotFoundError:
+    print("Debug module NOT found. Defaulting to normal printing")
+# ------------------------------------------------------------------
+# 🎨 SYNTAX HIGHLIGHTING: COLOR SCHEME & FORMATS
+# ------------------------------------------------------------------
+def Debug(val):
+    if logger == "1":
+        log(val)
+    else:
+        print(val)
 class FileManager(QTreeView):
     file_open_requested = Signal(str)
 
@@ -45,5 +59,5 @@ class FileManager(QTreeView):
             self.setRootIndex(self.model.index(path))
             return True
         else:
-            print(f"Error: Directory not found: {path}")
+            Debug(f"Error: Directory not found: {path}")
             return False

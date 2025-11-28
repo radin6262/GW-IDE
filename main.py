@@ -4,8 +4,28 @@ from PySide6.QtCore import Qt, QTimer, QCoreApplication, QUrl
 import sys
 import subprocess
 import os
-import ctypes
+import datetime
 
+# ------------------------
+# Detect debug mode
+# ------------------------
+logger = "0"
+try:
+    from addons.debug import *
+    logger = "1"
+    log("Debug module loaded! Running in DEBUG mode.")
+except ModuleNotFoundError:
+    print("Debug module NOT found. Running in NORMAL mode.")
+
+def debug(val):
+    if logger == "1":
+        log(val)
+    else:
+        print(val)
+
+# ------------------------
+# Splash Screen
+# ------------------------
 class SplashScreen(QWidget):
     def __init__(self, main_app_script="main.py", html_file="example.html", duration_ms=4000):
         super().__init__()
@@ -21,15 +41,14 @@ class SplashScreen(QWidget):
         self.webview = QWebEngineView()
 
         html_path = os.path.abspath(self.html_file)
-        print("Loading:", html_path)
-
-        # FIXED LINE
+        debug(f"Loading splash HTML: {html_path}")
         self.webview.load(QUrl.fromLocalFile(html_path))
 
         layout.addWidget(self.webview)
         self.setLayout(layout)
         self.show()
 
+        # Timer to close splash and launch main app
         self.launch_timer = QTimer(self)
         self.launch_timer.setSingleShot(True)
         self.launch_timer.timeout.connect(self.close_splash_and_start_main)
@@ -43,13 +62,38 @@ class SplashScreen(QWidget):
 
     def close_splash_and_start_main(self):
         try:
-            subprocess.Popen([sys.executable, self.main_app_script])
+            main_path = os.path.abspath(self.main_app_script)
+
+            if not os.path.exists(main_path):
+                debug(f"ERROR: Main app not found: {main_path}")
+            else:
+                if logger == "1":
+                    # Debug mode → launch normally so console shows
+                    debug(f"Launching main app in DEBUG mode: {main_path}")
+                    subprocess.Popen([sys.executable, main_path])
+                else:
+                    # Normal mode → launch with pythonw.exe (silent, no terminal)
+                    pythonw = sys.executable.replace("python.exe", "pythonw.exe")
+                    debug(f"Launching main app silently: {main_path}")
+                    subprocess.Popen([pythonw, main_path])
+
         except Exception as e:
-            print("Launch error:", e)
-        QCoreApplication.instance().quit()
+            debug(f"Launch error: {e}")
+
+        # Quit splash
+        app_instance = QCoreApplication.instance()
+        if app_instance is not None:
+            app_instance.quit()
 
 
+# ------------------------
+# Main
+# ------------------------
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    splash = SplashScreen(main_app_script="app.py", html_file="splash.html", duration_ms=10000)
+    splash = SplashScreen(
+        main_app_script="app.py",
+        html_file="splash.html",
+        duration_ms=10000
+    )
     sys.exit(app.exec())

@@ -21,7 +21,7 @@ from PySide6.QtCore import (
 )
 import ctypes
 # --- CONFIGURATION (Moved from original updater script) ---
-CURRENT_VERSION = "1.0.2.1"
+CURRENT_VERSION = "1.0.2.2"
 PACKAGE_JSON_URL = "https://raw.githubusercontent.com/IamAbolfazlGameMaker/GW-IDE/refs/heads/main/packages.json"
 SOURCE_CODE_ZIP_URL = "https://github.com/IamAbolfazlGameMaker/GW-IDE/archive/refs/heads/main.zip"
 UPDATE_TEMP_DIR = "temp_update_download"
@@ -35,6 +35,14 @@ from core.editor import Editor
 from core.file_manager import FileManager 
 from core.terminal import TerminalWidget 
 from core.settings_ui import SettingsUI 
+logger = "0"
+try:
+    from addons.debug import *
+    print("Debug module loaded!")
+    logger = "1"
+except ModuleNotFoundError:
+    print("Debug module NOT found. Defaulting to normal printing")
+
 # -----------------------------------------------------
 
 # --- 🛠️ UPDATE WORKER (Runs in a separate thread) ---
@@ -781,8 +789,13 @@ if __name__ == "__main__":
         import requests
         from packaging.version import parse
     except ImportError:
-        print("Error: The 'requests' and 'packaging' libraries are required.")
-        print("Please install them using: pip install requests packaging")
+        
+        if logger == "1":
+            log("Error: The 'requests' and 'packaging' libraries are required.")
+            log("Please install them using: pip install requests packaging")
+        else:
+            print("Error: The 'requests' and 'packaging' libraries are required.")
+            print("Please install them using: pip install requests packaging")
         sys.exit(1) # Exit if dependencies are missing
 
     app = QApplication(sys.argv)

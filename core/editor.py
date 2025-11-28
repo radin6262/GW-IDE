@@ -11,10 +11,21 @@ from PySide6.QtCore import (
     QSize, Qt, QRect, QFileInfo, QSignalBlocker, 
     QFile, QIODevice, Signal, QRegularExpressionMatch, QRegularExpression
 )
-
+logger = "0"
+try:
+    from addons.debug import *
+    print("Debug module loaded!")
+    logger = "1"
+except ModuleNotFoundError:
+    print("Debug module NOT found. Defaulting to normal printing")
 # ------------------------------------------------------------------
 # 🎨 SYNTAX HIGHLIGHTING: COLOR SCHEME & FORMATS
 # ------------------------------------------------------------------
+def Debug(val):
+    if logger == "1":
+        log(val)
+    else:
+        print(val)
 
 # Define a color scheme (VS Code Dark+ inspired)
 COLORS = {
@@ -340,12 +351,12 @@ class CodeEditorCore(QPlainTextEdit):
         """Saves the document content to the specified path or current path."""
         path = path if path else self._file_path
         if not path:
-            print("DEBUG: save_file called with no path, returning False.")
+            Debug("DEBUG: save_file called with no path, returning False.")
             return False
 
         file = QFile(path)
         if not file.open(QIODevice.WriteOnly | QIODevice.Text):
-            print(f"DEBUG: Failed to open file for writing: {path}. Error: {file.errorString()}")
+            Debug(f"DEBUG: Failed to open file for writing: {path}. Error: {file.errorString()}")
             QMessageBox.warning(self, "Save Error", f"Cannot write file {path}:\n{file.errorString()}")
             return False
         
@@ -359,10 +370,10 @@ class CodeEditorCore(QPlainTextEdit):
             self._title = QFileInfo(path).fileName()
             self.document().setModified(False) 
             self.document_title_changed.emit(self.get_tab_title()) # Notify tab widget title change
-            print(f"DEBUG: Successfully saved file to: {path}")
+            Debug(f"DEBUG: Successfully saved file to: {path}")
             return True
         except Exception as e:
-            print(f"DEBUG: Unexpected error during file write: {e}")
+            Debug(f"DEBUG: Unexpected error during file write: {e}")
             QMessageBox.critical(self, "Write Error", f"An unexpected error occurred during save: {e}")
             return False
 
@@ -456,12 +467,12 @@ class Editor(QTabWidget):
         """Saves the current file, prompting for path if unsaved."""
         editor = self.get_current_editor()
         if not editor:
-            print("DEBUG: save_current_file called but no editor widget is active.")
+            Debug("DEBUG: save_current_file called but no editor widget is active.")
             return False
             
         # Only skip saving if the document is NOT modified AND already has a path.
         if not editor.document().isModified() and editor.get_file_path() is not None:
-            print("DEBUG: Document not modified and already saved, skipping.")
+            Debug("DEBUG: Document not modified and already saved, skipping.")
             return True
 
         if editor.get_file_path() is None:
@@ -474,14 +485,14 @@ class Editor(QTabWidget):
             file_path, _ = QFileDialog.getSaveFileName(self, "Save File", default_name, filter_str)
             
             if file_path:
-                print(f"DEBUG: QFileDialog returned path: {file_path}")
+                Debug(f"DEBUG: QFileDialog returned path: {file_path}")
                 return editor.save_file(file_path)
             else:
-                print("DEBUG: QFileDialog cancelled.")
+                Debug("DEBUG: QFileDialog cancelled.")
                 return False # User cancelled save
         else:
             # Existing file, perform direct save
-            print(f"DEBUG: Saving existing file to: {editor.get_file_path()}")
+            Debug(f"DEBUG: Saving existing file to: {editor.get_file_path()}")
             return editor.save_file()
 
     def _update_tab_title(self, title):
