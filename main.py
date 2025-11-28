@@ -63,27 +63,35 @@ class SplashScreen(QWidget):
     def close_splash_and_start_main(self):
         try:
             main_path = os.path.abspath(self.main_app_script)
-
             if not os.path.exists(main_path):
-                debug(f"ERROR: Main app not found: {main_path}")
-            else:
                 if logger == "1":
-                    # Debug mode → launch normally so console shows
-                    debug(f"Launching main app in DEBUG mode: {main_path}")
-                    subprocess.Popen([sys.executable, main_path])
+                    log(f"ERROR: Main app not found: {main_path}")
                 else:
-                    # Normal mode → launch with pythonw.exe (silent, no terminal)
-                    pythonw = sys.executable.replace("python.exe", "pythonw.exe")
-                    debug(f"Launching main app silently: {main_path}")
-                    subprocess.Popen([pythonw, main_path])
+                    print(f"ERROR: Main app not found: {main_path}")
+                return
+
+            if logger == "1":
+            # Debug mode → silent launch, logs to latest.log
+                pythonw = sys.executable.replace("python.exe", "pythonw.exe")
+                log(f"Launching main app silently (DEBUG mode): {main_path}")
+                subprocess.Popen([pythonw, main_path])
+            else:
+            # Normal mode → open terminal so print works
+                print(f"Launching main app in normal mode: {main_path}")
+                subprocess.Popen([sys.executable, main_path])
 
         except Exception as e:
-            debug(f"Launch error: {e}")
+            if logger == "1":
+                log(f"Launch error: {e}")
+            else:
+                print(f"Launch error: {e}")
 
-        # Quit splash
+    # Close splash
         app_instance = QCoreApplication.instance()
         if app_instance is not None:
             app_instance.quit()
+
+
 
 
 # ------------------------

@@ -1,0 +1,24 @@
+[2025-11-28 21:24:17] Debug module loaded! Running in DEBUG mode.
+[2025-11-28 21:24:17] Loading splash HTML: E:\projects\GWide\splash.html
+[2025-11-28 21:24:27] Launching main app in DEBUG mode: E:\projects\GWide\app.py
+[2025-11-28 21:24:28] BASE_DIR= E:\projects\GWide\core
+[2025-11-28 21:24:28] USER_DATA_DIR= E:\projects\GWide\core\user_data
+[2025-11-28 21:24:28] THEMES_DIR= E:\projects\GWide\core\user_data\themes
+[2025-11-28 21:25:51] Debug module loaded! Running in DEBUG mode.
+[2025-11-28 21:25:51] Loading splash HTML: E:\projects\GWide\splash.html
+[2025-11-28 21:26:02] Launching main app in DEBUG mode: E:\projects\GWide\app.py
+[2025-11-28 21:26:02] BASE_DIR= E:\projects\GWide\core
+[2025-11-28 21:26:02] USER_DATA_DIR= E:\projects\GWide\core\user_data
+[2025-11-28 21:26:02] THEMES_DIR= E:\projects\GWide\core\user_data\themes
+[2025-11-28 21:26:11] Debug module loaded! Running in DEBUG mode.
+[2025-11-28 21:26:11] Loading splash HTML: E:\projects\GWide\splash.html
+[2025-11-28 21:26:22] Launching main app in DEBUG mode: E:\projects\GWide\app.py
+[2025-11-28 21:26:22] BASE_DIR= E:\projects\GWide\core
+[2025-11-28 21:26:22] USER_DATA_DIR= E:\projects\GWide\core\user_data
+[2025-11-28 21:26:22] THEMES_DIR= E:\projects\GWide\core\user_data\themes
+[2025-11-28 21:29:08] Debug module loaded! Running in DEBUG mode.
+[2025-11-28 21:29:08] Loading splash HTML: E:\projects\GWide\splash.html
+[2025-11-28 21:29:18] Launching main app silently (DEBUG mode): E:\projects\GWide\app.py
+[2025-11-28 21:29:18] BASE_DIR= E:\projects\GWide\core
+[2025-11-28 21:29:18] USER_DATA_DIR= E:\projects\GWide\core\user_data
+[2025-11-28 21:29:18] THEMES_DIR= E:\projects\GWide\core\user_data\themes
