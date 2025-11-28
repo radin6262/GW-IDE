@@ -21,7 +21,7 @@ from PySide6.QtCore import (
 )
 import ctypes
 # --- CONFIGURATION (Moved from original updater script) ---
-CURRENT_VERSION = "1.0.2.2"
+CURRENT_VERSION = "1.0.2.2-Patch1"
 PACKAGE_JSON_URL = "https://raw.githubusercontent.com/IamAbolfazlGameMaker/GW-IDE/refs/heads/main/packages.json"
 SOURCE_CODE_ZIP_URL = "https://github.com/IamAbolfazlGameMaker/GW-IDE/archive/refs/heads/main.zip"
 UPDATE_TEMP_DIR = "temp_update_download"
