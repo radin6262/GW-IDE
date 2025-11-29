@@ -148,7 +148,6 @@ class UpdateWorker(QRunnable):
                     else:
                         self.signals.progress.emit(f"Downloading: {bytes_downloaded / (1024*1024):.1f} MB (Progress unknown, 0%)") # Default 0%
                         
-
             # Move buffer cursor to the start for ZipFile reading
             zip_buffer.seek(0)
             
@@ -279,7 +278,7 @@ class UpdateCheckerDialog(QDialog):
                 # If no clear percentage is found, default to indeterminate mode 
                 # or a fixed value during non-download phases
                 if "Update applied" in text or "Extracting" in text:
-                     self.progress_bar.setValue(100)
+                    self.progress_bar.setValue(100)
                 else:
                     self.progress_bar.setValue(0)
                     
@@ -317,7 +316,7 @@ class UpdateCheckerDialog(QDialog):
             self.update_button.setText("Check Failed")
             self.progress_bar.setValue(0)
             QMessageBox.warning(self, "Update Check Failed", 
-                        "The update check failed due to an unknown error. Please check the logs.")
+                            "The update check failed due to an unknown error. Please check the logs.")
 
 
     def start_update(self):
@@ -483,9 +482,9 @@ class GW(QMainWindow):
             if path and path.endswith(".py"):
                 self.lang_label.setText("Language: Python")
             elif path and path.endswith(".html"):
-                 self.lang_label.setText("Language: HTML")
+                self.lang_label.setText("Language: HTML")
             elif path and path.endswith(".js"):
-                 self.lang_label.setText("Language: JavaScript")
+                self.lang_label.setText("Language: JavaScript")
             else:
                 self.lang_label.setText("Language: Text")
         else:
@@ -526,6 +525,16 @@ class GW(QMainWindow):
         save_action.setIcon(save_icon)
         save_action.triggered.connect(self.save_current)
         file_menu.addAction(save_action)
+        
+        # --- ADDED: Delete File Action ---
+        delete_action = QAction("De&lete File", self)
+        delete_action.setShortcut("Shift+Ctrl+D")
+        delete_icon = self.style().standardIcon(QStyle.SP_TrashIcon)
+        delete_action.setIcon(delete_icon)
+        delete_action.triggered.connect(self.delete_current_file)
+        file_menu.addAction(delete_action)
+        # --- END ADDED ---
+        
         file_menu.addSeparator()
 
         exit_action = QAction("E&xit", self)
@@ -617,6 +626,15 @@ class GW(QMainWindow):
         toolbar.addAction(open_file_action)
 
         toolbar.addSeparator()
+        
+        # --- ADDED: Delete Action to Toolbar ---
+        delete_icon = self.style().standardIcon(QStyle.SP_TrashIcon)
+        delete_action_toolbar = QAction(delete_icon, "Delete Current File (Shift+Ctrl+D)", self)
+        delete_action_toolbar.triggered.connect(self.delete_current_file)
+        toolbar.addAction(delete_action_toolbar)
+        # --- END ADDED ---
+        
+        toolbar.addSeparator()
 
         # Run/Execute Action 
         run_icon = self.style().standardIcon(QStyle.SP_MediaPlay)
@@ -654,7 +672,7 @@ class GW(QMainWindow):
                 # Ensure the restored sizes sum up to the current splitter width
                 total_width = self.splitter_top.width()
                 if sum(self._sidebar_sizes) != total_width:
-                     # Calculate new proportional sizes if the window size changed
+                    # Calculate new proportional sizes if the window size changed
                     sidebar_ratio = self._sidebar_sizes[0] / sum(self._sidebar_sizes)
                     new_sidebar_width = int(total_width * sidebar_ratio)
                     self.splitter_top.setSizes([new_sidebar_width, total_width - new_sidebar_width])
@@ -746,8 +764,50 @@ class GW(QMainWindow):
         else:
             self.status_bar.showMessage("File saved successfully.", 3000) 
 
+    # --- ADDED: Delete Current File Functionality ---
+    def delete_current_file(self):
+        """Deletes the file currently active in the editor, both from the editor and the OS."""
+        editor = self.editor.get_current_editor()
+        if not editor:
+            QMessageBox.warning(self, "Delete Error", "No file is currently open to delete.")
+            self.status_bar.showMessage("Delete Error: No file open.", 5000)
+            return
+
+        file_path = editor.get_file_path()
+        if not file_path or file_path.startswith("Untitled"):
+            QMessageBox.warning(self, "Delete Error", "Cannot delete an unsaved file. Please save it first or close the tab.")
+            self.status_bar.showMessage("Delete Error: File not saved.", 5000)
+            return
+
+        # Confirmation
+        reply = QMessageBox.question(self, 'Confirm Deletion', 
+            f"Are you sure you want to permanently delete the file:\n{os.path.basename(file_path)}\n\n(Path: {file_path})",
+            QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+
+        if reply == QMessageBox.Yes:
+            try:
+                # Delete the file from the OS
+                os.remove(file_path)
+                
+                # Close the tab in the editor
+                current_index = self.editor.currentIndex()
+                if current_index != -1:
+                    self.editor.removeTab(current_index) 
+                    
+                # Refresh the file manager sidebar to reflect the deletion
+                # Assumes FileManager has a refresh method.
+                if hasattr(self.file_manager, 'refresh'):
+                    self.file_manager.refresh() 
+                
+                self.status_bar.showMessage(f"File deleted successfully: {os.path.basename(file_path)}", 5000)
+
+            except Exception as e:
+                QMessageBox.critical(self, "Deletion Error", f"Failed to delete file: {e}")
+                self.status_bar.showMessage("Error: Failed to delete file.", 5000)
+    # --- END ADDED ---
+
     def toggle_autosave(self, state):
-        self.autosave_enabled = bool(state)
+        self.autosave_enabled = bool(state) # Completed the line for Python validity
         self.settings["autosave"] = self.autosave_enabled
         save_settings(self.settings)
 
