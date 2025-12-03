@@ -70,15 +70,7 @@ class SplashScreen(QWidget):
                     print(f"ERROR: Main app not found: {main_path}")
                 return
 
-            if logger == "1":
-            # Debug mode → silent launch, logs to latest.log
-                pythonw = sys.executable.replace("python.exe", "pythonw.exe")
-                log(f"Launching main app silently (DEBUG mode): {main_path}")
-                subprocess.Popen([pythonw, main_path])
-            else:
-            # Normal mode → open terminal so print works
-                print(f"Launching main app in normal mode: {main_path}")
-                subprocess.Popen([sys.executable, main_path])
+            subprocess.Popen([sys.executable, main_path])
 
         except Exception as e:
             if logger == "1":

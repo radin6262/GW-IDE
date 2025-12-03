@@ -263,6 +263,12 @@ class CodeEditorCore(QPlainTextEdit):
         """Updates the dirty state and notifies the main window."""
         self._is_dirty = modified
         self.document_title_changed.emit(self.get_tab_title())
+    def set_file_path(self, path):
+        if getattr(self, "_file_path", None) == path:
+            return  # already set, don't do anything
+        self._file_path = path
+    # any other logic like updating UI
+
 
     # -------------------------------------------------------------
     # 🚨 CORE LINE NUMBER LOGIC METHODS 
@@ -404,46 +410,6 @@ class CodeEditorCore(QPlainTextEdit):
         except Exception as e:
             QMessageBox.critical(self, "Read Error", f"An unexpected error occurred during load: {e}")
             return False
-    def rename_current_file(self):
-        """
-        Prompts the user for a new file name/path and performs a 'Save As' 
-        operation, which effectively renames the document within the application.
-        The old file (if any) is not deleted.
-        """
-        editor = self.get_current_editor()
-        if not editor:
-            return False
-
-        # Start directory and default filename setup for the dialog
-        current_path = editor.get_file_path()
-        current_dir = QFileInfo(current_path).absoluteDir().path() if current_path else ""
-        default_name = QFileInfo(current_path).fileName() if current_path else editor.get_default_filename()
-        
-        # We reuse the Save File dialog logic for renaming/Save As
-        filter_str = "All Files (*);;Python Files (*.py);;Text Files (*.txt)"
-        
-        new_path, _ = QFileDialog.getSaveFileName(
-            self, 
-            "Rename / Save As", 
-            QFile.join(current_dir, default_name), 
-            filter_str
-        )
-        
-        if new_path:
-            Debug(f"DEBUG: Attempting rename (Save As) to: {new_path}")
-            # The core editor's save_file handles writing content and updating metadata
-            return editor.save_file(new_path)
-        
-        Debug("DEBUG: Rename operation cancelled by user.")
-        return False
-
-    def set_file_path(self, new_path):
-        """
-        Sets the file path of the currently active editor.
-        This is a convenience wrapper for updating document metadata externally (e.g., from a main window File menu).
-        """
-        self._file_path = new_path
-        return True
 
 # ------------------------------------------------------------------
 # 🚨 EDITOR (QTabWidget wrapper, REQUIRED FOR MAIN WINDOW)
@@ -466,9 +432,10 @@ class Editor(QTabWidget):
         """Returns the current CodeEditorCore instance or None."""
         return self.currentWidget()
 
-    def get_file_path(self):
-        """Returns the currently associated file path for this document."""
-        return getattr(self, '_file_path', None)
+    def get_current_file_path(self):
+        """Returns the file path of the current editor."""
+        editor = self.get_current_editor()
+        return editor.get_file_path() if editor else None
 
     def create_new_file(self):
         """Adds a new, unsaved tab."""

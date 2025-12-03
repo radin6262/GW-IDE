@@ -25,9 +25,7 @@ how to setup source code:
 - if a cmd pops-up at the end don't panic its installing deps
 - when complete run the app
 - when it requests admin perms don't panic its required for saving files in protected areas
-- if any errors happen give us the latest.log located in <pre>(appinstallationdir)\addons\latest.log</pre>
-- if you don't have the addons folder go install it from source code
-* Note: debug was only added since 1.0.2.3 , if your using a older version send us the powershell logsa
+- there is always a debug powershell page so if you run into any problems give us the powershell log
 ---
 
 ## License – Restricted Use License (RUL)

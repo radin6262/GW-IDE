@@ -22,7 +22,7 @@ from PySide6.QtCore import (
 )
 import ctypes
 # --- CONFIGURATION (Moved from original updater script) ---
-CURRENT_VERSION = "1.0.2.4"
+CURRENT_VERSION = "1.0.2.5"
 PACKAGE_JSON_URL = "https://raw.githubusercontent.com/IamAbolfazlGameMaker/GW-IDE/refs/heads/main/packages.json"
 SOURCE_CODE_ZIP_URL = "https://github.com/IamAbolfazlGameMaker/GW-IDE/archive/refs/heads/main.zip"
 UPDATE_TEMP_DIR = "temp_update_download"
@@ -32,7 +32,7 @@ UPDATE_TARGET_DIR = os.getcwd()
 # --- Core Logic Imports (DO NOT REMOVE AT ANY Given MOMENT) ---
 # NOTE: These imports are necessary for the provided structure to function.
 from core.settings import load_theme, load_settings, save_settings
-from core.editor import Editor
+from core.editor import Editor 
 from core.file_manager import FileManager 
 from core.terminal import TerminalWidget 
 from core.settings_ui import SettingsUI 
@@ -783,49 +783,61 @@ class GW(QMainWindow):
 
     # --- ADDED: Rename Current File Functionality ---
     def rename_current_file(self):
-        """Renames the currently open file on disk and updates the editor tab."""
-        # Hypothetical incorrect code before your realization
-        editor_widget = self.editor.get_current_editor()
-        if not editor_widget:
-            QMessageBox.warning(self, "Rename Error", "No file is currently open.")
+        """Renames the file currently active in the editor within its current directory."""
+        editor = self.editor.get_current_editor()
+        if not editor:
+            QMessageBox.warning(self, "Rename Error", "No file is currently open to rename.")
+            self.status_bar.showMessage("Rename Error: No file open.", 5000)
             return
 
-        old_path = editor_widget.get_file_path()
-        if not old_path or old_path == "Untitled":
-            QMessageBox.warning(self, "Rename Error", "The current file must be saved before renaming it.")
+        old_path = editor.get_file_path()
+        if not old_path or old_path.startswith("Untitled"):
+            QMessageBox.warning(self, "Rename Error", "Cannot rename an unsaved file. Please save it first.")
+            self.status_bar.showMessage("Rename Error: File not saved.", 5000)
             return
-            
-        # Check if file has unsaved changes
-        if editor_widget.document().isModified():
-             QMessageBox.warning(self, "Unsaved Changes", "Please save the current file before renaming it.")
-             return
 
         old_name = os.path.basename(old_path)
-        new_name, ok = QInputDialog.getText(self, "Rename File", "Enter new file name:", text=old_name)
+        current_dir = os.path.dirname(old_path)
+
+        # Use QInputDialog to get the new filename
+        new_name, ok = QInputDialog.getText(self, "Rename File", "New filename:", text=old_name)
 
         if ok and new_name and new_name != old_name:
-            new_path = os.path.join(os.path.dirname(old_path), new_name)
+            new_path = os.path.join(current_dir, new_name)
             
             if os.path.exists(new_path):
-                QMessageBox.critical(self, "Rename Error", f"A file or directory named '{new_name}' already exists in this location.")
-                return
+                 QMessageBox.warning(self, "Rename Error", f"File '{new_name}' already exists in this directory.")
+                 self.status_bar.showMessage("Rename Error: Target file exists.", 5000)
+                 return
 
             try:
-    # ... your successful os.rename and subsequent lines
-                
+                # 1. Perform the actual OS rename (move/rename)
                 os.rename(old_path, new_path)
-                editor_widget.set_file_path(new_path) # <--- This line now calls the corrected method
-                tab_index = self.editor.currentIndex()
-                self.editor.setTabText(tab_index, new_name)
-                self.file_manager.refresh_view()
-                self.status_bar.showMessage(f"File renamed to: {new_name}", 3000)
+                
+                # 2. Update the editor/tab title and internal path
+                # Assuming the editor class has a method to update its path and tab title
+                if hasattr(self.editor, 'update_file_path_and_title'):
+                    # The editor is a QTabWidget, 'editor' is the CodeEditorCore instance
+                    # We assume this method exists in the Editor class (QTabWidget wrapper)
+                    self.editor.update_file_path_and_title(editor, new_path) 
+                else:
+                    # Fallback for updating the editor's display name and internal path
+                    editor.set_file_path(new_path)
+                    tab_index = self.editor.indexOf(editor)
+                    self.editor.setTabText(tab_index, new_name)
+                
+                # 3. Refresh the file manager sidebar
+                if hasattr(self.file_manager, 'refresh'):
+                    self.file_manager.refresh() 
+                
+                self.status_bar.showMessage(f"File successfully renamed to '{new_name}'", 5000)
+
             except Exception as e:
-    # 🌟 Add this line to see the detailed error in your terminal/console 🌟
-                import traceback
-                traceback.print_exc() 
                 QMessageBox.critical(self, "Rename Error", f"Failed to rename file: {e}")
                 self.status_bar.showMessage("Error: Failed to rename file.", 5000)
-
+        else:
+            self.status_bar.showMessage("Rename cancelled.", 3000)
+    # --- END ADDED ---
     
     # --- ADDED: Delete Current File Functionality ---
     def delete_current_file(self):
