@@ -29,7 +29,8 @@ how to setup source code:
 ---
 ### Main app usage
 - run the new gw ide shortcut on your desktop
-- if you checked it off go to <pre>(appinstallationdir)\</pre> then run launch.exe
+- if you checked it off go to <pre>(appinstallationdir)\</pre> 
+- then run launch.exe
 
 - Note: when it requests admin perms don't panic its required for saving files in protected areas
 
