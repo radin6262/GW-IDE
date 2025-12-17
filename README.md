@@ -42,7 +42,6 @@ how to setup source code:
 
 ---
 
-## License – Restricted Use License (RUL)
 
 © 2025 Radin6262. All rights reserved.
 
