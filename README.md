@@ -1,48 +1,35 @@
-# GW IDE
+# GM BROWSER
 
-Clean. Fast. Lightweight.
+## Overview
+GM BROWSER is a web browser created by AbolfazlGameMaker.
+This software is intended strictly for personal use only and is protected by copyright law.
 
-GW IDE is a minimalist, extensible desktop IDE Built with PySide6.
+## License & Usage Terms
 
-> Because less is more when you want speed.
+Copyright © AbolfazlGameMaker
+All rights reserved.
 
----
+GM BROWSER is licensed for personal, non-commercial use only.
 
-how to setup source code:
-- Go download the source code
-- run <pre>pip install pyside6 requests packaging</pre> in cmd
-- run main.py
-### Required Library:
-- platform
-- Pyside6
-- getpass
-- requests
-- packaging
+### Permitted Use
+- Personal and private use only
 
----
-### How To Use THE setup.exe
-- make sure you have python installed (below 3.11 is strongly not recommended)
-- run setup.exe(from the latest version)
-- if a cmd pops-up at the end don't panic its installing deps
-- when complete run the app
+### Prohibited Use
+The following actions are strictly prohibited:
+- Selling or reselling the software
+- Renting, leasing, or lending the software
+- Any commercial or business use
+- Copying, modifying, or redistributing the software
+- Including the software in any paid product, service, or bundle
 
----
-### Main app usage
-- run the new gw ide shortcut on your desktop
-- if you checked it off go to <pre>(appinstallationdir)\</pre> 
-- then run launch.exe
+## Copyright
+GM BROWSER is protected under international copyright laws.
+All rights, ownership, and intellectual property belong to AbolfazlGameMaker.
 
-- Note: when it requests admin perms don't panic its required for saving files in protected areas
+## Legal Warning
+Any unauthorized use, especially commercial use, resale, or distribution,
+may result in legal action.
 
----
-### if any error happen:
-- if any errors happen give us the latest.log located in <pre>(appinstallationdir)\addons\latest.log</pre>
-- if you don't have the addons folder go install it from source code
-* Note: debug was only added since 1.0.2.3 , if your using a older version send us the powershell logs
-
----
-
-
-© 2025 Radin6262. All rights reserved.
-
-#### Mit license is used
+## Disclaimer
+GM BROWSER is provided "as is", without any warranties, express or implied.
+The creator is not responsible for any damage caused by using this software.
