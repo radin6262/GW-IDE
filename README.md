@@ -1,5 +1,6 @@
 # GW IDE
-
+Note: **This repo has been archived due to it begin fully built and there is nothing to add now. you can still download it and use it**
+---
 Clean. Fast. Lightweight.
 
 GW IDE is a minimalist, extensible desktop IDE Built with PySide6.
