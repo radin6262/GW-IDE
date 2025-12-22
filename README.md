@@ -1,5 +1,5 @@
 # GW IDE
-Note: **This repo has been archived due to it begin fully built and there is nothing to add now. you can still download it and use it**
+Note: **This repo will be archived for a whilte... but don't be sad, it will eventually come back from the dead**
 ---
 Clean. Fast. Lightweight.
 
